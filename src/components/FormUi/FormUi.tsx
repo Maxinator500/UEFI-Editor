@@ -11,6 +11,13 @@ export function validateInput(value: string) {
     value.length <= 2 &&
     (value.length === 0 ||
       value.split("").every((char) => /[a-fA-F0-9]/.test(char)))
+  )
+}
+
+export function validateInput2(value: string) {
+  return (
+    value.length <= 4 &&
+    (value.split("").every((char) => /[a-fA-F0-9]/.test(char)))
   );
 }
 
@@ -138,6 +145,23 @@ const TableRow = React.memo(
         </td>
         <td>{type}</td>
         <td className={s.width}>
+          {child.PageID !== null && (
+            <TextInput
+              value={child.PageID}
+              onChange={(ev) => {
+                const value = ev.currentTarget.value.toUpperCase();
+
+                if (validateInput2(value)) {
+                  setData((draft) => {
+                    draft.forms[currentFormIndex].children[index].PageID =
+                    value;
+                  });
+                }
+              }}
+            />
+          )}
+        </td>
+        <td className={s.width}>
           {child.accessLevel !== null && (
             <TextInput
               value={child.accessLevel}
@@ -218,7 +242,7 @@ const TableRow = React.memo(
                   {info.map((item, index) => (
                     <div key={index} className={s.infoRow}>
                       {item[0] === "newline" ? (
-                        <br />
+                        <br/>
                       ) : (
                         <>
                           <div>{item[0]}</div>
@@ -242,6 +266,7 @@ const TableRow = React.memo(
       newProps.data.forms[newProps.currentFormIndex].children[newProps.index];
 
     return (
+      oldChild.PageID === newChild.PageID &&
       oldChild.accessLevel === newChild.accessLevel &&
       oldChild.failsafe === newChild.failsafe &&
       oldChild.optimal === newChild.optimal &&
@@ -351,6 +376,7 @@ export function FormUi({
         <tr>
           <th>Name</th>
           <th>Type</th>
+          <th>Ref To</th>
           <th>Access Level</th>
           <th>Failsafe</th>
           <th>Optimal</th>

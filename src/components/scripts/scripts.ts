@@ -16,6 +16,7 @@ import {
   FormChildren,
   StringPrompt,
   Suppression,
+  Offsets2,
 } from "./types";
 
 export const version = "0.0.8";
@@ -114,6 +115,41 @@ function getAccessLevels(
   }
 
   return [null, null, null, null];
+}
+
+function getPageIDs(
+  bytes: string,
+  hexSetupdataBin: string
+): [string, Offsets2] | [null, null] {
+  const byteArray = bytes.split(" ");
+  const regex = new RegExp(
+    byteArray[6] +
+      byteArray[7] +
+      ".{20}(....).{12}" +
+      byteArray[4] +
+      byteArray[5] +
+      ".{52}" +
+      byteArray[2] +
+      byteArray[3],
+    "g"
+  );
+
+  const matches = [...hexSetupdataBin.matchAll(regex)].filter(
+    (element) => (element.index as number) % 2 === 0
+  );
+
+  if (matches.length === 1) {
+    const match = matches[0];
+    const index = match.index as number;
+
+    const offsets: Offsets2 = [
+      decToHexString((index + 24) / 2),
+    ];
+
+    return [match[1], offsets];
+  }
+
+  return [null, null];
 }
 
 function getUint8Array(string: string) {
@@ -230,11 +266,31 @@ export async function downloadModifiedFiles(data: Data, files: Files) {
   for (const form of data.forms) {
     for (const child of form.children) {
       if (
+        child.offsets2 &&
+        child.PageID &&
         child.offsets &&
         child.accessLevel &&
         child.failsafe &&
         child.optimal
       ) {
+        const PageIDIndex = offsetToIndex(child.offsets2[0]);
+        const oldPageID = modifiedSetupdataBin.slice(
+          PageIDIndex,
+          PageIDIndex + 4
+        );
+        const newPageID = child.PageID.padStart(4, "0");
+        if (oldPageID !== newPageID) {
+          modifiedSetupdataBin = replaceAt(
+            modifiedSetupdataBin,
+            PageIDIndex,
+            4,
+            newPageID
+          );
+          setupdataBinChangeLog += `${child.name} | QuestionId ${child.questionId}: Ref from ${oldPageID} to ${newPageID}\n`;
+
+          wasSetupdataBinModified = true;
+        }
+
         const accessLevelIndex = offsetToIndex(child.offsets[0]);
         const oldAccessLevel = modifiedSetupdataBin.slice(
           accessLevelIndex,
@@ -491,6 +547,10 @@ export async function parseData(files: Files) {
         ref[8],
         setupdataBin
       );
+      const [PageID, offsets2] = getPageIDs(
+        ref[8],
+        setupdataBin
+      );
 
       const formId = ref[7];
 
@@ -504,10 +564,12 @@ export async function parseData(files: Files) {
           (varStore) => varStore.varStoreId === ref[5]
         )?.name as string,
         formId,
+        PageID,
         accessLevel,
         failsafe,
         optimal,
         offsets,
+        offsets2,
       };
 
       checkSuppressions(scopes, currentRef);
@@ -526,6 +588,10 @@ export async function parseData(files: Files) {
         string[10],
         setupdataBin
       );
+      const [PageID, offsets2] = getPageIDs(
+        string[10],
+        setupdataBin
+      );
 
       currentString = {
         name: string[1],
@@ -536,10 +602,12 @@ export async function parseData(files: Files) {
         varStoreName: varStores.find(
           (varStore) => varStore.varStoreId === string[5]
         )?.name as string,
+        PageID,
         accessLevel,
         failsafe,
         optimal,
         offsets,
+        offsets2,
       };
 
       checkSuppressions(scopes, currentString);
@@ -554,7 +622,10 @@ export async function parseData(files: Files) {
         numeric[12],
         setupdataBin
       );
-
+      const [PageID, offsets2] = getPageIDs(
+        numeric[12],
+        setupdataBin
+      );
       currentNumeric = {
         name: numeric[1],
         description: numeric[2],
@@ -569,10 +640,12 @@ export async function parseData(files: Files) {
         min: numeric[9],
         max: numeric[10],
         step: numeric[11],
+        PageID,
         accessLevel,
         failsafe,
         optimal,
         offsets,
+        offsets2,
       };
 
       checkSuppressions(scopes, currentNumeric);
@@ -587,6 +660,10 @@ export async function parseData(files: Files) {
         checkBox[8],
         setupdataBin
       );
+      const [PageID, offsets2] = getPageIDs(
+        checkBox[8],
+        setupdataBin
+        );
 
       currentCheckBox = {
         name: checkBox[1],
@@ -599,10 +676,12 @@ export async function parseData(files: Files) {
         )?.name as string,
         varOffset: checkBox[6],
         flags: checkBox[7],
+        PageID,
         accessLevel,
         failsafe,
         optimal,
         offsets,
+        offsets2,
       };
 
       checkSuppressions(scopes, currentCheckBox);
@@ -614,6 +693,10 @@ export async function parseData(files: Files) {
 
     if (oneOf) {
       const [accessLevel, failsafe, optimal, offsets] = getAccessLevels(
+        oneOf[12],
+        setupdataBin
+      );
+      const [PageID, offsets2] = getPageIDs(
         oneOf[12],
         setupdataBin
       );
@@ -630,10 +713,12 @@ export async function parseData(files: Files) {
         varOffset: oneOf[6],
         size: oneOf[8],
         options: [],
+        PageID,
         accessLevel,
         failsafe,
         optimal,
         offsets,
+        offsets2,
       };
 
       checkSuppressions(scopes, currentOneOf);

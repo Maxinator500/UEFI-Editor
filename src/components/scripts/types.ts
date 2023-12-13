@@ -38,16 +38,20 @@ export interface Form {
 
 export type Offsets = [string, string, string];
 
+export type Offsets2 = [string];
+
 export interface FormChild {
   name: string;
   description: string;
   questionId: string;
   varStoreId: string;
   varStoreName: string;
+  PageID: string | null;
   accessLevel: string | null;
   failsafe: string | null;
   optimal: string | null;
   offsets: Offsets | null;
+  offsets2: Offsets2 | null;
   suppressIf?: Array<string>;
 }
 
