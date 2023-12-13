@@ -71,7 +71,7 @@ export default function App() {
               variant="default"
               size="lg"
               component="a"
-              href="https://github.com/Maxinator500/UEFI-Editor/script/Publish%20HII%20Resources.zip"
+              href="https://github.com/Maxinator500/UEFI-Editor/blob/master/script/Publish%20HII%20Resources.zip"
               target="_blank"
               leftIcon={<IconBrandGithub />}
             >
