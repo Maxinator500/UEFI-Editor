@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/UEFI-Editor/static/css/main.b97eb694.css",
-    "main.js": "/UEFI-Editor/static/js/main.f0a47f3d.js",
+    "main.css": "/UEFI-Editor/static/css/main.f258965d.css",
+    "main.js": "/UEFI-Editor/static/js/main.327e1f6e.js",
     "static/js/787.e58f1a75.chunk.js": "/UEFI-Editor/static/js/787.e58f1a75.chunk.js",
     "index.html": "/UEFI-Editor/index.html",
-    "main.b97eb694.css.map": "/UEFI-Editor/static/css/main.b97eb694.css.map",
-    "main.f0a47f3d.js.map": "/UEFI-Editor/static/js/main.f0a47f3d.js.map",
+    "main.f258965d.css.map": "/UEFI-Editor/static/css/main.f258965d.css.map",
+    "main.327e1f6e.js.map": "/UEFI-Editor/static/js/main.327e1f6e.js.map",
     "787.e58f1a75.chunk.js.map": "/UEFI-Editor/static/js/787.e58f1a75.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b97eb694.css",
-    "static/js/main.f0a47f3d.js"
+    "static/css/main.f258965d.css",
+    "static/js/main.327e1f6e.js"
   ]
 }
