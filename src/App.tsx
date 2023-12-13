@@ -71,11 +71,11 @@ export default function App() {
               variant="default"
               size="lg"
               component="a"
-              href="https://github.com/BoringBoredom/UEFI-Editor/issues"
+              href="https://github.com/Maxinator500/UEFI-Editor/script/Publish%20HII%20Resources.zip"
               target="_blank"
               leftIcon={<IconBrandGithub />}
             >
-              Report a bug
+              Publish HII resources
             </Button>
           </Group>
         </Stack>
